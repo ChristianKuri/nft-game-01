@@ -18,23 +18,27 @@ contract Token is ERC721, Ownable {
 
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
-    modifier isAlive(uint256 tokenid) {
-        require(_tokenDetails[tokenid].lastMeal + _tokenDetails[tokenid].endurance > block.timestamp);
+    modifier isAlive(uint256 tokenId) {
+        require(_tokenDetails[tokenId].lastMeal + _tokenDetails[tokenId].endurance > block.timestamp);
         _;
+    }
+
+    function getTokenDetails(uint256 tokenId) public view returns (Pet memory) {
+        return _tokenDetails[tokenId];
     }
 
     function mint(
         uint8 damage,
         uint8 magic,
-        uint8 endurance
+        uint256 endurance
     ) public onlyOwner {
         _tokenDetails[nextId] = Pet(damage, magic, block.timestamp, endurance);
         _safeMint(msg.sender, nextId);
         nextId++;
     }
 
-    function feed(uint256 tokenid) public isAlive(tokenid) {
-        Pet storage pet = _tokenDetails[tokenid];
+    function feed(uint256 tokenId) public isAlive(tokenId) {
+        Pet storage pet = _tokenDetails[tokenId];
         pet.lastMeal = block.timestamp;
     }
 
